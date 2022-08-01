@@ -2,6 +2,8 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -9,9 +11,11 @@ import java.util.Random;
 public class Calculate {
 
     public static void main(String[] args) {
-        System.out.println(generateFlow());
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+        try {
+            FileHelper.isFileChanged("file.txt");
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     private static Map<String,Integer> generateFlow(){
