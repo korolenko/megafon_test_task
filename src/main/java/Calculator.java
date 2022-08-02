@@ -1,29 +1,50 @@
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.ToolProvider;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Calculator {
+    private final Object lock = new Object();
+    private final Compiler compiler;
+    private Class<?> compiledClass;
+    private final Flow flow;
+    private final Map<String, List<String>> formulasMap;
 
-    public static void main(String[] args) throws IOException {
-        String className = "Test";
-        String fileName = "file.txt";
-        Compiler compiler = new Compiler(className,fileName);
-        Class<?> compiledClass = compiler.doCompile();
-        Map<String, Integer> arguments = UtilHelper.generateFlow();
-        Map<String, List<String>> formulas = UtilHelper.initFormulasMap();
-        calculate(compiledClass,formulas,arguments);
+    Calculator(Compiler compiler) {
+        this.compiler = compiler;
+        flow = new Flow();
+        formulasMap = UtilHelper.initFormulasMap();
     }
 
-    public static void calculate(Class<?> loaded, Map<String, List<String>> formulasMap,Map<String, Integer> argumentsMap) {
+    public void compile() throws InterruptedException, IOException {
+        while (true) {
+            synchronized (lock) {
+                System.out.println("inside compile");
+                compiledClass = compiler.doCompile();
+                lock.notify();
+                while (compiledClass == null) {
+                    lock.wait();
+                }
+            }
+            Thread.sleep(3000);
+        }
+    }
+
+    public void calc() throws InterruptedException {
+        while (true) {
+            synchronized (lock) {
+                System.out.println("inside calc");
+                Map<String, Integer> argumentsFlow = flow.generateFlow();
+                doCalc(compiledClass, argumentsFlow);
+                lock.wait();
+            }
+            Thread.sleep(3000);
+        }
+    }
+
+    private void doCalc(Class<?> loaded, Map<String, Integer> argumentsMap) {
         for (Map.Entry<String, List<String>> entry : formulasMap.entrySet()) {
             try {
                 String formulaName = entry.getKey();
@@ -32,9 +53,10 @@ public class Calculator {
                 Integer firstArgVal = argumentsMap.get(firstArgName);
                 String secondArgName = entry.getValue().get(1);
                 Integer secondArgVal = argumentsMap.get(secondArgName);
-                System.out.println("firstArgVal " + firstArgVal);
-                System.out.println("secondArgVal " + secondArgVal);
-                System.out.println("Result of method : " +formulaName + ": " + method.invoke(null, firstArgVal, secondArgVal));
+                System.out.println("val1: " + firstArgVal + " " +
+                                "val2: " + secondArgVal + " " +
+                        "Result of method : " + formulaName +
+                        ": " + method.invoke(null, firstArgVal, secondArgVal));
             } catch (NoSuchMethodException e) {
                 System.err.println("No such method: " + e);
             } catch (IllegalAccessException e) {
