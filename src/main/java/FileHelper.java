@@ -1,12 +1,8 @@
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.*;
 
-import static java.nio.file.StandardWatchEventKinds.*;
-
 public class FileHelper {
-    public static boolean isFileChanged(String fileName) throws IOException, URISyntaxException {
-        boolean isChanged = false;
+    public static void isFileChanged(String fileName) throws IOException {
         final Path path = FileSystems.getDefault().getPath(System.getProperty("user.dir"));
         System.out.println(path);
         try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
@@ -18,10 +14,9 @@ public class FileHelper {
                     System.out.println(changed);
                     if (changed.endsWith(fileName)) {
                         System.out.println(fileName + " has changed");
-                        isChanged = true;
+
                     }
                 }
-                // reset the key
                 boolean valid = wk.reset();
                 if (!valid) {
                     System.out.println("Key has been unregistered");
@@ -30,10 +25,9 @@ public class FileHelper {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return isChanged;
     }
 
-    public static Path getFilePath(String fileName) throws URISyntaxException {
+    public static Path getFilePath(String fileName) {
         return Paths.get(System.getProperty("user.dir") + "/" +fileName);
     }
 }
