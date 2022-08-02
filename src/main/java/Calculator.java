@@ -1,50 +1,11 @@
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 
 public class Calculator {
-    private final Object lock = new Object();
-    private final Compiler compiler;
-    private Class<?> compiledClass;
-    private final Flow flow;
-    private final Map<String, List<String>> formulasMap;
-
-    Calculator(Compiler compiler) {
-        this.compiler = compiler;
-        flow = new Flow();
-        formulasMap = UtilHelper.initFormulasMap();
-    }
-
-    public void compile() throws InterruptedException, IOException {
-        while (true) {
-            synchronized (lock) {
-                System.out.println("inside compile");
-                compiledClass = compiler.doCompile();
-                lock.notify();
-                while (compiledClass == null) {
-                    lock.wait();
-                }
-            }
-            Thread.sleep(3000);
-        }
-    }
-
-    public void calc() throws InterruptedException {
-        while (true) {
-            synchronized (lock) {
-                System.out.println("inside calc");
-                Map<String, Integer> argumentsFlow = flow.generateFlow();
-                doCalc(compiledClass, argumentsFlow);
-                lock.wait();
-            }
-            Thread.sleep(3000);
-        }
-    }
-
-    private void doCalc(Class<?> loaded, Map<String, Integer> argumentsMap) {
+    public static void doCalc(Class<?> loaded, Map<String, Integer> argumentsMap,Map<String, List<String>> formulasMap) {
         for (Map.Entry<String, List<String>> entry : formulasMap.entrySet()) {
             try {
                 String formulaName = entry.getKey();

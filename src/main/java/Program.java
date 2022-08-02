@@ -7,12 +7,12 @@ public class Program {
 
     public static void main(String[] args) throws InterruptedException {
         Compiler compiler = new Compiler(CLASS_NAME,FILE_NAME);
-        Calculator calculator = new Calculator(compiler);
+        Executor executor = new Executor(compiler);
         Thread thread1 = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    calculator.compile();
+                    executor.compile();
                 } catch (InterruptedException | MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -25,7 +25,7 @@ public class Program {
             @Override
             public void run() {
                 try {
-                    calculator.calc();
+                    executor.calc();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
