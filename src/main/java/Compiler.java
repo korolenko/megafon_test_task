@@ -8,6 +8,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
+/**
+ * класс, осуществляющий компиляцию формул
+ */
 public class Compiler {
     private final String className;
     private final String fileName;
@@ -22,7 +25,7 @@ public class Compiler {
     public Class<?> doCompile() throws IOException {
         File file = new File(getFilePath(fileName).toString());
         long last = this.timeStamp;
-        System.out.println("last " + last);
+        System.out.println(fileName + " last modified timestamp: " + last);
         this.timeStamp = file.lastModified();
         if(last != -1){
             if(last == timeStamp){

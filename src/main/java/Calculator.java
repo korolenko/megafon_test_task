@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Класс, выполняющий вычисление по формулам
+ */
 public class Calculator {
     public static void doCalc(Class<?> loaded, Map<String, Integer> argumentsMap,Map<String, List<String>> formulasMap) {
         for (Map.Entry<String, List<String>> entry : formulasMap.entrySet()) {
@@ -16,7 +19,7 @@ public class Calculator {
                 Integer secondArgVal = argumentsMap.get(secondArgName);
                 System.out.println("val1: " + firstArgVal + " " +
                                 "val2: " + secondArgVal + " " +
-                        "Result of method : " + formulaName +
+                        "Result of method " + formulaName +
                         ": " + method.invoke(null, firstArgVal, secondArgVal));
             } catch (NoSuchMethodException e) {
                 System.err.println("No such method: " + e);

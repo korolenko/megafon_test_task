@@ -1,5 +1,8 @@
 import java.util.*;
 
+/**
+ * Класс генерации входного потока параметров
+ */
 public class Flow {
     public Map<String, Integer> generateFlow() {
         Map<String, Integer> argumentsFlow = new HashMap<>();

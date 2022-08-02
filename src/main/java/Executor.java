@@ -2,6 +2,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * запускается 2 потока, один проверяет, нужна ли компиляция, если да, то выполняет ее
+ * второй выполняет вычисление значений по формулам
+ * работа потоков синхронизирована
+ */
 public class Executor {
     private final Object lock = new Object();
     private final Compiler compiler;
